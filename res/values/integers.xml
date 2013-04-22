@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="bar_graph_rounding">5</integer>
+    <integer name="bar_graph_animation_duration">500</integer>
+
+</resources>
