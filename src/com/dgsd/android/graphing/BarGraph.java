@@ -134,13 +134,14 @@ public class BarGraph extends View {
                 final float widthOfEachBar = totalWidth / mData.size();
                 final float bottom = mHeight - mMaxXValueWidth - mXAxisLabelTopPadding
                         - (mAxisLinePaint.getStrokeWidth() / 2f) - getPaddingBottom();
+                final float totalHeight = bottom;
 
                 for (int i = 0 ; i < mData.size(); i++) {
                     //Draw the border
                     mRectF.bottom = bottom;
                     mRectF.left = (i * widthOfEachBar) + mBarPadding;
                     mRectF.right = mRectF.left + widthOfEachBar - mBarPadding;
-                    mRectF.top = mHeight * (1f - ((mData.get(i).getValue() * mCurrentAnimValue) / mMaxValue));
+                    mRectF.top = totalHeight * (1f - ((mData.get(i).getValue() * mCurrentAnimValue) / mMaxValue));
 
                     mPaint.setColor(mData.get(i).getBorderColor());
                     canvas.drawRoundRect(mRectF, mBarRoundingValue, mBarRoundingValue, mPaint);
