@@ -1,14 +1,13 @@
-package com.dgsd.android.graphing;
+package com.dgsd.android.graphing.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import com.dgsd.android.graphing.BarGraph;
 
-public class TestActivity extends Activity {
-    /**
-     * Called when the activity is first created.
-     */
+public class DemoActivity extends Activity {
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,4 +34,5 @@ public class TestActivity extends Activity {
 
         setContentView(ll);
     }
+
 }
