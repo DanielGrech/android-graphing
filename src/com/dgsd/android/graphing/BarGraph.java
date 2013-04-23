@@ -102,8 +102,8 @@ public class BarGraph extends View {
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mWidth = getWidth();
-        mHeight = getHeight();
+        mWidth = getMeasuredWidth();
+        mHeight = getMeasuredHeight();
 
         calculateYValues();
     }
@@ -112,25 +112,25 @@ public class BarGraph extends View {
     protected void onDraw(final Canvas canvas) {
 
         //Y-axis
-        canvas.drawLine(mMaxYValueWidth + mYAxisLabelRightPadding,
+        canvas.drawLine(mMaxYValueWidth + mYAxisLabelRightPadding + getPaddingLeft(),
                 0,
-                mMaxYValueWidth + mYAxisLabelRightPadding,
+                mMaxYValueWidth + mYAxisLabelRightPadding + getPaddingLeft(),
                 mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding,
                 mAxisLinePaint);
 
         //X-axis
-        canvas.drawLine(mMaxYValueWidth + mYAxisLabelRightPadding,
+        canvas.drawLine(mMaxYValueWidth + mYAxisLabelRightPadding  + getPaddingLeft(),
                 mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding,
-                mWidth,
+                mWidth - getPaddingRight(),
                 mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding,
                 mAxisLinePaint);
 
         if (mData != null) {
             canvas.save();
             {
-                canvas.translate(mMaxYValueWidth + mYAxisLabelRightPadding, 0);
+                canvas.translate(mMaxYValueWidth + mYAxisLabelRightPadding + getPaddingLeft(), 0);
 
-                final float totalWidth = (mWidth - mMaxYValueWidth - mYAxisLabelRightPadding);
+                final float totalWidth = mWidth - mMaxYValueWidth - mYAxisLabelRightPadding - getPaddingLeft() - getPaddingRight();
                 final float widthOfEachBar = totalWidth / mData.size();
                 final float bottom = mHeight - mMaxXValueWidth - mXAxisLabelTopPadding
                         - (mAxisLinePaint.getStrokeWidth() / 2f) - getPaddingBottom();
@@ -180,7 +180,7 @@ public class BarGraph extends View {
                 for (int i = 0; i < mYValues.length; i++) {
                     canvas.drawText(mYValues[i],
                             getPaddingLeft(),
-                            mHeight - (i * ((mHeight - mMaxXValueWidth) / mYValues.length)) - (mYValueHeight / 2f) - mXAxisLabelTopPadding,
+                            mHeight - (i * ((mHeight - mMaxXValueWidth) / mYValues.length)) - (mYValueHeight / 2f) - mXAxisLabelTopPadding - getPaddingBottom(),
                             mAxisLabelPaint);
                 }
             }
@@ -221,7 +221,7 @@ public class BarGraph extends View {
             return;
         }
 
-        int maxValues = (int) ((mHeight - mMaxXValueWidth - mXAxisLabelTopPadding) / (mYValueHeight * 2f) - 1);
+        int maxValues = (int) ((mHeight - mMaxXValueWidth - mXAxisLabelTopPadding - getPaddingBottom()) / (mYValueHeight * 2f) - 1);
 
         log("Max Values: " + maxValues);
 
