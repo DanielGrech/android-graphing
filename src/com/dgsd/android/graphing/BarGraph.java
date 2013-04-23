@@ -3,6 +3,7 @@ package com.dgsd.android.graphing;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.*;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,7 @@ public class BarGraph extends View {
 
     private Paint mPaint;
     private Paint mAxisLabelPaint;
+    private Paint mAxisTitlePaint;
     private Paint mAxisLinePaint;
 
     private int mWidth;
@@ -40,7 +42,9 @@ public class BarGraph extends View {
 
     private float mXAxisLabelTopPadding;
     private float mYAxisLabelRightPadding;
+    private float mYAxisTitlePadding;
 
+    private float mYAxisTitleHeight;
     private float mBarPadding;
     private float mBorderWidth;
     private int mBarRoundingValue;
@@ -49,6 +53,10 @@ public class BarGraph extends View {
     private RectF mRectF;
 
     private float mCurrentAnimValue;
+
+    private String mYAxisTitle;
+
+    private Path mPath;
 
     public BarGraph(final Context context) {
         super(context);
@@ -68,6 +76,8 @@ public class BarGraph extends View {
     private void init(final AttributeSet attrs) {
         final Resources r = getResources();
 
+        mPath = new Path();
+
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -77,6 +87,9 @@ public class BarGraph extends View {
         mAxisLabelPaint.setColor(r.getColor(R.color.bar_graph_axis_label_color));
         mAxisLabelPaint.setTextSize(r.getDimensionPixelSize(R.dimen.bar_graph_axis_label_size));
         mAxisLabelPaint.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+
+        mAxisTitlePaint = new Paint(mAxisLabelPaint);
+        mAxisTitlePaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         mAxisLinePaint = new Paint();
         mAxisLinePaint.setAntiAlias(true);
@@ -93,6 +106,7 @@ public class BarGraph extends View {
 
         mXAxisLabelTopPadding = r.getDimensionPixelSize(R.dimen.bar_graph_x_axis_top_padding);
         mYAxisLabelRightPadding = r.getDimensionPixelSize(R.dimen.bar_graph_y_axis_right_padding);
+        mYAxisTitlePadding = r.getDimensionPixelSize(R.dimen.bar_graph_y_axis_title_padding);
         mBorderWidth = r.getDimensionPixelSize(R.dimen.bar_graph_border_width);
         mBarRoundingValue = r.getInteger(R.integer.bar_graph_rounding);
         mBarPadding = r.getDimensionPixelSize(R.dimen.bar_graph_bar_padding);
@@ -109,28 +123,54 @@ public class BarGraph extends View {
     }
 
     @Override
+    protected void onSizeChanged(final int w, final int h, final int oldw, final int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mWidth = w;
+        mHeight = h;
+    }
+
+    @Override
     protected void onDraw(final Canvas canvas) {
+        final float yAxisX = mMaxYValueWidth + mYAxisLabelRightPadding +
+                getPaddingLeft() + (mYAxisTitleHeight * 2) + mYAxisTitlePadding;
+        final float xAxisY = mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding;
+
+        //Y-axis title
+        if(mYAxisTitleHeight > 0) {
+            canvas.save();
+            {
+
+                mPath.moveTo(mYAxisTitleHeight, xAxisY);
+                mPath.lineTo(mYAxisTitleHeight, getPaddingTop());
+                canvas.drawTextOnPath(mYAxisTitle,
+                        mPath,
+                        (xAxisY - getPaddingTop()) / 2f - mAxisTitlePaint.measureText(mYAxisTitle) / 2f,
+                        0,
+                        mAxisTitlePaint);
+            }
+            canvas.restore();
+        }
 
         //Y-axis
-        canvas.drawLine(mMaxYValueWidth + mYAxisLabelRightPadding + getPaddingLeft(),
+        canvas.drawLine(yAxisX,
                 0,
-                mMaxYValueWidth + mYAxisLabelRightPadding + getPaddingLeft(),
+                yAxisX,
                 mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding,
                 mAxisLinePaint);
 
         //X-axis
-        canvas.drawLine(mMaxYValueWidth + mYAxisLabelRightPadding  + getPaddingLeft(),
-                mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding,
+        canvas.drawLine(yAxisX,
+                xAxisY,
                 mWidth - getPaddingRight(),
-                mHeight - getPaddingBottom() - mMaxXValueWidth - mXAxisLabelTopPadding,
+                xAxisY,
                 mAxisLinePaint);
 
         if (mData != null) {
             canvas.save();
             {
-                canvas.translate(mMaxYValueWidth + mYAxisLabelRightPadding + getPaddingLeft(), 0);
+                canvas.translate(yAxisX, 0);
 
-                final float totalWidth = mWidth - mMaxYValueWidth - mYAxisLabelRightPadding - getPaddingLeft() - getPaddingRight();
+                final float totalWidth = mWidth - yAxisX - getPaddingRight() - mBarPadding;
                 final float widthOfEachBar = totalWidth / mData.size();
                 final float bottom = mHeight - mMaxXValueWidth - mXAxisLabelTopPadding
                         - (mAxisLinePaint.getStrokeWidth() / 2f) - getPaddingBottom();
@@ -175,11 +215,11 @@ public class BarGraph extends View {
             canvas.save();
             {
                 //Translate canvas up above x-axis labels..
-                canvas.translate(0, -mMaxXValueWidth);
+                canvas.translate((mYAxisTitleHeight * 2) + getPaddingLeft() + mYAxisTitlePadding, -mMaxXValueWidth);
 
                 for (int i = 0; i < mYValues.length; i++) {
                     canvas.drawText(mYValues[i],
-                            getPaddingLeft(),
+                            0,
                             mHeight - (i * ((mHeight - mMaxXValueWidth) / mYValues.length)) - (mYValueHeight / 2f) - mXAxisLabelTopPadding - getPaddingBottom(),
                             mAxisLabelPaint);
                 }
@@ -251,6 +291,16 @@ public class BarGraph extends View {
             } else {
                 mYValues[i] = String.valueOf(mMinValue + (i * stepVal));
             }
+        }
+    }
+
+    public void setYAxisTitle(String label) {
+        mYAxisTitle = label;
+        if(TextUtils.isEmpty(mYAxisTitle)) {
+            mYAxisTitleHeight = 0;
+        }  else {
+            mAxisTitlePaint.getTextBounds(label, 0, label.length(), mTextHeightRect);
+            mYAxisTitleHeight = mTextHeightRect.height();
         }
     }
 
