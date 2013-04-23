@@ -3,7 +3,7 @@
     <dimen name="bar_graph_axis_label_size">14sp</dimen>
     <dimen name="bar_graph_axis_width">1dp</dimen>
     <dimen name="bar_graph_y_axis_right_padding">4dp</dimen>
-    <dimen name="bar_graph_y_axis_title_padding">8dp</dimen>
+    <dimen name="bar_graph_y_axis_title_padding">4dp</dimen>
     <dimen name="bar_graph_x_axis_top_padding">4dp</dimen>
     <dimen name="bar_graph_border_width">1dp</dimen>
     <dimen name="bar_graph_bar_padding">8dp</dimen>
