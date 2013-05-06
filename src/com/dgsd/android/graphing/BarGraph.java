@@ -243,6 +243,13 @@ public class BarGraph extends View {
         calculateMaxXLabelLength();
     }
 
+    public void clearData() {
+        if(mData != null)
+            mData.clear();
+
+        mYValues = null;
+    }
+
     private void calculateMaxXLabelLength() {
         int maxStrLen = Integer.MIN_VALUE;
         if (mData != null) {
