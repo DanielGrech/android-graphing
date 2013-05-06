@@ -337,7 +337,7 @@ public class BarGraph extends View {
         public String toLabel(int value);
     }
 
-    public static class DataDimension {
+    static class DataDimension {
         private String mName;
         private int mValue;
         private int mColor;
