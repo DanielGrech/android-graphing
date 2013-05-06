@@ -58,6 +58,8 @@ public class BarGraph extends View {
 
     private Path mPath;
 
+    private LabelAdapter mLabelAdapter;
+
     public BarGraph(final Context context) {
         super(context);
         init(null);
@@ -292,11 +294,14 @@ public class BarGraph extends View {
         final int stepVal = (mMaxValue - mMinValue) / (maxValues - 1);
         for (int i = 0; i < maxValues; i++) {
             if (i == 0) {
-                mYValues[i] = String.valueOf(mMinValue);
+                mYValues[i] = mLabelAdapter == null ?
+                        String.valueOf(mMinValue) : mLabelAdapter.toLabel(mMinValue);
             } else if (i == maxValues - 1) {
-                mYValues[i] = String.valueOf(mMaxValue);
+                mYValues[i] = mLabelAdapter == null ?
+                        String.valueOf(mMaxValue) : mLabelAdapter.toLabel(mMaxValue);
             } else {
-                mYValues[i] = String.valueOf(mMinValue + (i * stepVal));
+                mYValues[i] = mLabelAdapter == null ?
+                        String.valueOf(mMinValue + (i * stepVal)) : mLabelAdapter.toLabel(mMinValue + (i * stepVal));
             }
         }
     }
@@ -325,6 +330,14 @@ public class BarGraph extends View {
 
     public float getCurrentAnimValue() {
         return mCurrentAnimValue;
+    }
+
+    public void setLabelAdapter(final LabelAdapter adapter) {
+        mLabelAdapter = adapter;
+    }
+
+    public static interface LabelAdapter {
+        public String toLabel(int value);
     }
 
     public static class DataDimension {
