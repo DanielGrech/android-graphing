@@ -272,10 +272,7 @@ public class BarGraph extends View {
 
         int maxValues = (int) ((mHeight - mMaxXValueWidth - mXAxisLabelTopPadding - getPaddingBottom()) / (mYValueHeight * 2f) - 1);
 
-        log("Max Values: " + maxValues);
-
         if (maxValues <= 2) {
-            log("View is too small vertically to fit values!");
             return;
         }
 
@@ -384,10 +381,5 @@ public class BarGraph extends View {
         public void setBorderColor(final int borderColor) {
             mBorderColor = borderColor;
         }
-    }
-
-    private static void log(String msg) {
-        if (BuildConfig.DEBUG)
-            Log.d(TAG, msg);
     }
 }
